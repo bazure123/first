@@ -4,34 +4,25 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger:
-- main
+ paths:
+   include:
+     - main/*
 
 pool:
-  vmImage: ubuntu-latest
+  name: test
 
-strategy:
-  matrix:
-    Python38:
-      python.version: '3.8'
-    Python39:
-      python.version: '3.9'
-    Python310:
-      python.version: '3.10'
-    Python311:
-      python.version: '3.11'
+variables:
+  dockerRegistryServiceConnection: 'ab598ca3-2d45-4c9e-b334-5fc01e1abda9'
+  imageRepository: 'try1'
+  containerRegistry: 'smithcont.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildId)'
 
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
-
-- script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
-  displayName: 'Install dependencies'
-
-- script: |
-    pip install pytest pytest-azurepipelines
-    pytest
-  displayName: 'pytest'
+stages:
+- stage: Build
+  displayName: Build
+  jobs:
+    - job: Build
+      displayName: Build
+      steps:
+        - task: Docker@2

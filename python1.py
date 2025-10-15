@@ -1,5 +1,7 @@
-def main():
-    print("Hello World")
+from fastapi import FastAPI
+import uvicorn
+app = FastAPI()
 
-if __name__ == "__main__":
-    main()
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
